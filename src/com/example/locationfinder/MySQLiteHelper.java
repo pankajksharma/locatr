@@ -37,7 +37,7 @@ public class MySQLiteHelper extends SQLiteOpenHelper{
 	
 	public Cursor getAllPlaces(){
 		SQLiteDatabase db = this.getReadableDatabase();
-		String[] cols = {COL_NAME, COL_LAT, COL_LONG, COL_RADIUS, COL_RING_VAL};
+		String[] cols = {COL_NAME, COL_LAT, COL_LONG, COL_RADIUS, COL_RING_VAL, COL_ID};
 		return db.query(TABLE_NAME, cols, null, null, null, null, null);
 	}
 	
@@ -53,5 +53,25 @@ public class MySQLiteHelper extends SQLiteOpenHelper{
 		// TODO Auto-generated method stub
 		
 	}
+
+	public String getName(int location_index) {
+		SQLiteDatabase db = this.getReadableDatabase();
+		Cursor cursor = db.rawQuery("SELECT * FROM "+TABLE_NAME+" WHERE "+COL_ID+" = ?", new String[] {location_index+""});
+		cursor.moveToFirst();
+		return cursor.getString(cursor.getColumnIndex(COL_NAME));		
+	}
 	
+	public int getInt(String string, int location_index) {
+		SQLiteDatabase db = this.getReadableDatabase();
+		Cursor cursor = db.rawQuery("SELECT "+string+" FROM "+TABLE_NAME+" WHERE "+COL_ID+" = ?", new String[] {location_index+""});
+		cursor.moveToFirst();
+		return cursor.getInt(0);
+	}
+	
+	public double getDouble(String string, int location_index) {
+		SQLiteDatabase db = this.getReadableDatabase();
+		Cursor cursor = db.rawQuery("SELECT "+string+" FROM "+TABLE_NAME+" WHERE "+COL_ID+" = ?", new String[] {location_index+""});
+		cursor.moveToFirst();
+		return cursor.getDouble(0);
+	}
 }

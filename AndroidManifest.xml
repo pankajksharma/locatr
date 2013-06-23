@@ -19,7 +19,7 @@
         android:theme="@android:style/Theme.Holo" >
         <activity
             android:name="com.example.locationfinder.MainActivity"
-            android:label="Your Locations" >
+            android:label="Locatr" >
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
@@ -29,6 +29,12 @@
         <activity
             android:name="com.example.locationfinder.NewLocationActivity"
             android:label="Add New Location" >
+        </activity>
+        
+        <activity 
+            android:name="EditLocationActivity"
+            android:label="Edit Location" >
+            
         </activity>
         
         <service

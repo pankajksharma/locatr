@@ -13,9 +13,12 @@ import android.location.LocationManager;
 import android.media.AudioManager;
 import android.os.Bundle;
 import android.view.View;
+import android.widget.AdapterView;
+import android.widget.AdapterView.OnItemClickListener;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.CompoundButton;
+import android.widget.Toast;
 import android.widget.CompoundButton.OnCheckedChangeListener;
 import android.widget.ListView;
 import android.widget.ToggleButton;
@@ -29,6 +32,8 @@ public class MainActivity extends Activity {
 	
 	LocationManager locationManager;
 	LocationListener locationListener;
+	
+	ArrayList<Integer> row_index ;
 	
 	
 	protected void onResume() {
@@ -49,6 +54,18 @@ public class MainActivity extends Activity {
 		toggle_btn = (ToggleButton) findViewById(R.id.btn);
 		
 		serviceState = getSharedPreferences("serviceState", MODE_PRIVATE);
+		
+		saved_places.setOnItemClickListener(new OnItemClickListener() {
+
+			@Override
+			public void onItemClick(AdapterView<?> arg0, View arg1, int arg2,
+					long arg3) {
+				Intent editIntent = new Intent(getApplicationContext(), EditLocationActivity.class);
+				editIntent.putExtra("row_id", row_index.get(arg2));
+//				Toast.makeText(getApplicationContext(), row_index+" "+arg2+" "+arg3+" "+row_index.get(arg2), Toast.LENGTH_LONG).show();
+				startActivity(editIntent);
+			}
+		});
 		
 		
 		if(serviceState.contains("state_of_service") && serviceState.getBoolean("state_of_service", false))
@@ -77,7 +94,6 @@ public class MainActivity extends Activity {
 			}
 		});
 		
-	//	setPlaces();
 		
 	}
 	
@@ -87,10 +103,12 @@ public class MainActivity extends Activity {
 		ArrayList<String> all_places = new ArrayList<String>();
 		MySQLiteHelper myHelper = new MySQLiteHelper(this);
 		Cursor places = myHelper.getAllPlaces();
+		row_index = new ArrayList<Integer>();
 		if(places.getCount() != 0){
 			places.moveToFirst();
 			while(!places.isAfterLast()){
 				all_places.add(places.getString(0));
+				row_index.add(places.getInt(5));
 				places.moveToNext();
 			}
 			
