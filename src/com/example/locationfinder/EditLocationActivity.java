@@ -29,7 +29,7 @@ AudioManager audioManager;
 Location location, myLocation;
 Criteria criteria;
 SeekBar seekBar;
-Button button;
+Button button, deleteButton;
 int ProgressVal=200, location_index;
 ToggleButton toggleButton;
 SharedPreferences preferences;
@@ -38,11 +38,12 @@ String bestProvider;
 public static String mpref = "prefer";
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
-		location_index = getIntent().getIntExtra("row_index", 0);
+		location_index = getIntent().getIntExtra("row_id", 0);
 		
 		super.onCreate(savedInstanceState);
-		setContentView(R.layout.new_location);
+		setContentView(R.layout.edit_location);
 		button = (Button) findViewById(R.id.button1);
+		deleteButton = (Button) findViewById(R.id.delete_btn);
 		edtLocationName = (EditText) findViewById(R.id.editText1);
 		
 		edtLocationName.setText(helper.getName( location_index));
@@ -107,13 +108,23 @@ public static String mpref = "prefer";
 
 			private void saveLocation() {
 				MySQLiteHelper myHelper = new MySQLiteHelper(EditLocationActivity.this);
-				myHelper.addLocation(edtLocationName.getText().toString(), myLocation, ProgressVal, toggleval);
-				Toast.makeText(getApplicationContext(), "Added Location Successfully!", Toast.LENGTH_LONG).show();
+				myHelper.updateLocation(location_index,edtLocationName.getText().toString(), myLocation, ProgressVal, toggleval);
+				Toast.makeText(getApplicationContext(), "Location Updated Successfully!", Toast.LENGTH_LONG).show();
 				EditLocationActivity.this.finish();
 			}
 		});
 
-		
+		deleteButton.setOnClickListener(new OnClickListener() {
+			
+			@Override
+			public void onClick(View arg0) {
+				MySQLiteHelper myHelper = new MySQLiteHelper(EditLocationActivity.this);
+				myHelper.deleteLocation(location_index);
+				Toast.makeText(getApplicationContext(), "Location Deleted Successfully!", Toast.LENGTH_LONG).show();
+				EditLocationActivity.this.finish();
+			}
+		});
+		 
 	}
 
 	@Override

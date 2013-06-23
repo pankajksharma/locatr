@@ -6,6 +6,7 @@ import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 import android.location.Location;
 import android.util.Log;
+import android.widget.Toast;
 
 public class MySQLiteHelper extends SQLiteOpenHelper{
 	
@@ -17,11 +18,13 @@ public class MySQLiteHelper extends SQLiteOpenHelper{
 	private static final String COL_NAME = "name";
 	private static final String COL_RADIUS = "radius";
 	private static final String COL_RING_VAL = "ringer_value";
+	private Context context;
 	
 	
 	
 	public MySQLiteHelper(Context context) {
 		super(context, DB_NAME, null, 1);
+		this.context = context;
 	}
 	
 	public void addLocation(String place_name, Location location, int radius, Boolean ring){
@@ -56,22 +59,42 @@ public class MySQLiteHelper extends SQLiteOpenHelper{
 
 	public String getName(int location_index) {
 		SQLiteDatabase db = this.getReadableDatabase();
-		Cursor cursor = db.rawQuery("SELECT * FROM "+TABLE_NAME+" WHERE "+COL_ID+" = ?", new String[] {location_index+""});
+//		Toast.makeText(context, "SELECT * FROM "+TABLE_NAME+" WHERE "+COL_ID+" = "+location_index, Toast.LENGTH_LONG).show();
+//		Log.d("","SELECT * FROM "+TABLE_NAME+" WHERE "+COL_ID+" = "+location_index);
+		Cursor cursor = db.rawQuery("SELECT * FROM "+TABLE_NAME+" WHERE "+COL_ID+" = "+location_index, null);
 		cursor.moveToFirst();
 		return cursor.getString(cursor.getColumnIndex(COL_NAME));		
+//		return "ad";
 	}
 	
 	public int getInt(String string, int location_index) {
 		SQLiteDatabase db = this.getReadableDatabase();
-		Cursor cursor = db.rawQuery("SELECT "+string+" FROM "+TABLE_NAME+" WHERE "+COL_ID+" = ?", new String[] {location_index+""});
+		Cursor cursor = db.rawQuery("SELECT "+string+" FROM "+TABLE_NAME+" WHERE "+COL_ID+" = "+location_index, null);
 		cursor.moveToFirst();
 		return cursor.getInt(0);
 	}
 	
 	public double getDouble(String string, int location_index) {
 		SQLiteDatabase db = this.getReadableDatabase();
-		Cursor cursor = db.rawQuery("SELECT "+string+" FROM "+TABLE_NAME+" WHERE "+COL_ID+" = ?", new String[] {location_index+""});
+		Cursor cursor = db.rawQuery("SELECT "+string+" FROM "+TABLE_NAME+" WHERE "+COL_ID+" = "+location_index, null);
 		cursor.moveToFirst();
 		return cursor.getDouble(0);
+	}
+
+	public void deleteLocation(int location_index) {
+		SQLiteDatabase db = this.getWritableDatabase();
+		db.execSQL("DELETE FROM "+TABLE_NAME+" WHERE "+COL_ID+" = "+location_index);
+		db.close();
+	}
+
+	public void updateLocation(int row_id,String name, Location myLocation,
+			int progressVal, Boolean toggleval) {
+		int ring_val = (toggleval) ? 1:0;
+		SQLiteDatabase db = this.getWritableDatabase();
+		db.execSQL("UPDATE "+TABLE_NAME+" SET "+COL_NAME+"= '"+name+"' WHERE "+COL_ID+" = "+row_id);
+		db.execSQL("UPDATE "+TABLE_NAME+" SET "+COL_LAT+"= '"+myLocation.getLatitude()+"' WHERE "+COL_ID+" = "+row_id);
+		db.execSQL("UPDATE "+TABLE_NAME+" SET "+COL_LONG+"= '"+myLocation.getLongitude()+"' WHERE "+COL_ID+" = "+row_id);
+		db.execSQL("UPDATE "+TABLE_NAME+" SET "+COL_RADIUS+"= '"+progressVal+"' WHERE "+COL_ID+" = "+row_id);
+		db.execSQL("UPDATE "+TABLE_NAME+" SET "+COL_RING_VAL+"= '"+ring_val+"' WHERE "+COL_ID+" = "+row_id);
 	}
 }
